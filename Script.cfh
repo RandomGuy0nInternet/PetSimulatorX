@@ -1,0 +1,75 @@
+if game.CoreGui:FindFirstChild("Mana") then
+    game.CoreGui.Mana:Destroy()
+end
+
+local UIlib = loadstring(game:HttpGet("https://pastebin.com/raw/4Xnm6ajk"))()
+
+local Win = UIlib:Window("Cofiez Hub", "Pet Simulator X")
+local TabFarm = Win:Tab("Autofarm")
+
+TabFarm:Toggle("Autofarm", false, function(t)
+    getgenv().AutoFarm = t
+    if getgenv().AutoFarm then
+        repeat wait()
+            pcall(function()
+                coroutine.wrap(function()
+                function FarmCoin(CoinID, PetID)
+                    workspace.__THINGS.__REMOTES["join coin"]:InvokeServer({[1] = CoinID, [2] = {[1] = PetID}})
+                    workspace.__THINGS.__REMOTES["farm coin"]:FireServer({[1] = CoinID, [2] = PetID})
+                end
+
+                function GetPet()
+                    local Returneble = {}
+                    for i,v in pairs(game:GetService("Players").LocalPlayer.PlayerGui.Inventory.Frame.Main.Pets:GetChildren()) do
+                        if v.ClassName == "TextButton" and v.Equipped.Visible then
+                            table.insert(Returneble, v.Name)
+                        end
+                    end
+                    return Returneble
+                end
+                local NearestCoin = math.huge
+                local nearest;
+                for i,v in pairs(game:GetService("Workspace")["__THINGS"].Coins:GetChildren()) do
+                    if (v.POS.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude < NearestCoin then
+                    nearest = v
+                    NearestCoin = (v.POS.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude
+                    end
+                end
+                local MyPets = GetPet()
+
+                for i,v in pairs(MyPets) do
+                    FarmCoin(nearest.Name, v)
+                end
+            end)() 
+            end)
+        until getgenv().AutoFarm == false
+    end
+end)
+
+TabFarm:Toggle("Auto Collect Coins", false, function(t)
+    getgenv().AutoCollectCoins = t
+    if getgenv().AutoCollectCoins then
+        repeat wait()
+        pcall(function()
+            for i,v in pairs(game:GetService("Workspace")["__THINGS"].Orbs:GetChildren()) do
+                v.CFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
+            end
+        end)
+    until getgenv().AutoCollectCoins == false
+    end
+end)
+
+
+TabFarm:Toggle("Auto Collect LootBags", false, function(t)
+    getgenv().AutoCollectLootBags = t
+    if getgenv().AutoCollectLootBags then
+        repeat wait()
+        pcall(function()
+            for i,v in pairs(game:GetService("Workspace")["__THINGS"].Lootbags:GetChildren()) do
+                v.CFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
+            end
+        end)
+        task.wait(.5)
+    until getgenv().AutoCollectLootBags == false
+    end
+end)
